@@ -49,10 +49,6 @@ class TestUniqueSlug(TestCase):
         cls.user = User.objects.create(username='Мимо Крокодил')
         cls.auth_user = Client()
         cls.auth_user.force_login(cls.user)
-        cls.note = Note.objects.create(
-            title='Заголовок', text='Текст заметки',
-            slug='note-slug', author=cls.author,
-        )
         cls.url = reverse('notes:add')
         cls.form_data = {
             'title': 'Новый заголовок',
