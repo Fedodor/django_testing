@@ -44,7 +44,7 @@ class TestContent(ParentTestClass):
 
     @classmethod
     def setUpTestData(cls):
-        super().setUpTestData(
+        super(TestContent, cls).setUpTestData(
             note=True, auth_client=True, auth_reader=True
         )
 

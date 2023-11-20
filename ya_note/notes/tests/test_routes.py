@@ -52,7 +52,7 @@ class TestPagesAvaibility(ParentTestClass):
 
     @classmethod
     def setUpTestData(cls):
-        super().setUpTestData(
+        super(TestPagesAvaibility, cls).setUpTestData(
             note=True, author=True, reader=True,
             auth_client=True, auth_reader=True
         )
@@ -85,7 +85,7 @@ class TestRedirects(ParentTestClass):
 
     @classmethod
     def setUpTestData(cls):
-        super().setUpTestData(
+        super(TestRedirects, cls).setUpTestData(
             author=True, reader=True,
         )
 
