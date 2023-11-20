@@ -24,11 +24,14 @@ class ParentTestClass(TestCase):
             title='Заголовок', text='Текст заметки',
             slug='note-slug', author=cls.author,
         )
-        # cls.new_note_data = (title='Заголовок', text='Текст заметки',
-        #    slug='note-slug', author=cls.author,)
-        cls.form_data = {
+        cls.new_note_form_data = {
             'title': 'Новый заголовок',
             'text': 'Новый текст',
+            'slug': 'note-slug-a'
+        }
+        cls.form_data = {
+            'title': 'Заголовок',
+            'text': 'Текст заметки',
             'slug': 'note-slug'
         }
         cls.auth_client = cls.client.force_login(cls.author)
@@ -39,8 +42,7 @@ class ParentTestClass(TestCase):
 
 class TestContent(ParentTestClass):
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUpTestData():
         super().setUpTestData(
             note=True, auth_client=True, auth_reader=True
         )
