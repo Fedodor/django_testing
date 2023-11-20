@@ -1,65 +1,50 @@
 import pytest
 from pytest_django.asserts import assertRedirects
+from pytest_lazyfixture import lazy_fixture
+
 from http import HTTPStatus
 
 from django.urls import reverse
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+CLIENT = lazy_fixture('client')
+AUTHOR = lazy_fixture('author_client')
+ADMIN = lazy_fixture('admin_client')
+
+
 @pytest.mark.parametrize(
-    'name, args',
+    'url, parametrized_client, expected_status',
     (
-        ('news:home', None),
-        ('users:login', None),
-        ('users:logout', None),
-        ('users:signup', None),
+        (pytest.lazy_fixture('url_home_page'), CLIENT, HTTPStatus.OK),
+        (pytest.lazy_fixture('url_user_login'), CLIENT, HTTPStatus.OK),
+        (pytest.lazy_fixture('url_user_logout'), CLIENT, HTTPStatus.OK),
+        (pytest.lazy_fixture('url_user_signup'), CLIENT, HTTPStatus.OK),
+        (pytest.lazy_fixture('url_edit_comment'), AUTHOR, HTTPStatus.OK),
+        (pytest.lazy_fixture('url_delete_comment'), AUTHOR, HTTPStatus.OK),
+        (pytest.lazy_fixture('url_edit_comment'), ADMIN, HTTPStatus.NOT_FOUND),
+        (pytest.lazy_fixture('url_delete_comment'), ADMIN,
+         HTTPStatus.NOT_FOUND),
     )
 )
-def test_pages_availability_for_anonymous_user(
-        client, news, name, args
+def test_pages_availability_for_all_users(
+        url, parametrized_client, expected_status
 ):
-    url = reverse(name, args=args)
-    assert client.get(url).status_code == HTTPStatus.OK, (
-        f'Проверьте, что код ответа {HTTPStatus.OK} страницы '
-        f'"{url}" соответствует ожидаемому.'
+    assert parametrized_client.get(url).status_code == expected_status, (
+        f'Проверьте, что код ответа страницы "{url}" соответствует ожидаемому.'
     )
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize(
-    'name, args',
+    'url',
     (
-        ('news:edit', pytest.lazy_fixture('pk_for_comment',)),
-        ('news:delete', pytest.lazy_fixture('pk_for_comment',)),
-    )
-)
-def test_pages_availability_for_author_and_user(
-        admin_client, author_client, name, args
-):
-    url = reverse(name, args=args)
-    assert author_client.get(url).status_code == HTTPStatus.OK, (
-        f'Проверьте, что код ответа {HTTPStatus.OK} страницы '
-        f'"{url}" соответствует ожидаемому.'
-    )
-    assert admin_client.get(url).status_code == HTTPStatus.NOT_FOUND, (
-        f'Проверьте, что код ответа {HTTPStatus.NOT_FOUND} страницы '
-        f'"{url}" соответствует ожидаемому.'
-    )
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    'name, args',
-    (
-        ('news:edit', pytest.lazy_fixture('pk_for_comment',)),
-        ('news:delete', pytest.lazy_fixture('pk_for_comment',)),
+        (pytest.lazy_fixture('url_edit_comment')),
+        (pytest.lazy_fixture('url_delete_comment')),
     )
 )
 def test_redirect_for_anonymous_client(
-    client, name, args
+    client, url
 ):
-    login_url = reverse('users:login')
-    url = reverse(name, args=args)
-    expected_url = f'{login_url}?next={url}'
+    expected_url = f'{reverse("users:login")}?next={url}'
     response = client.get(url)
     assertRedirects(response, expected_url)

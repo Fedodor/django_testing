@@ -1,81 +1,80 @@
 import pytest
-from datetime import datetime, timedelta
 
-from django.utils import timezone
-from django.urls import reverse
 from django.conf import settings
 
-from news.models import Comment, News
+from news.forms import CommentForm
+
+pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.django_db
+@pytest.mark.parametrize(
+    'url',
+    (
+        (pytest.lazy_fixture('url_home_page')),
+    )
+)
 def test_count_news_on_home_page(
-    client,
+    client, news_list, url
 ):
-    today = datetime.today()
-    News.objects.bulk_create(
-        [
-            News(
-                title=f'Новость {index}',
-                text='Просто текст.',
-                date=today - timedelta(days=index)
-            )
-            for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
-        ]
+    news_list = news_list
+    response = client.get(url)
+    news_list = response.context['object_list']
+    assert len(news_list) == settings.NEWS_COUNT_ON_HOME_PAGE
+
+
+@pytest.mark.parametrize(
+    'url',
+    (
+        (pytest.lazy_fixture('url_home_page')),
     )
-    response = client.get(reverse('news:home'))
-    object_list = response.context['object_list']
-    assert len(object_list) == settings.NEWS_COUNT_ON_HOME_PAGE
-
-
-@pytest.mark.django_db
+)
 def test_order_news_on_home_page(
-    client,
+    client, news_list, url
 ):
-    today = datetime.today()
-    News.objects.bulk_create(
-        [
-            News(
-                title=f'Новость {index}',
-                text='Просто текст.',
-                date=today - timedelta(days=index)
-            )
-            for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
-        ]
+    news_list = news_list
+    response = client.get(url)
+    news_list = response.context['object_list']
+    dates = [news.date for news in news_list]
+    assert dates == sorted(dates, reverse=True)
+
+
+@pytest.mark.parametrize(
+    'url',
+    (
+        (pytest.lazy_fixture('url_detail_page')),
     )
-    response = client.get(reverse('news:home'))
-    object_list = response.context['object_list']
-    dates = [news.date for news in object_list]
-    sorted_dates = sorted(dates, reverse=True)
-    assert dates == sorted_dates
-
-
-@pytest.mark.django_db
+)
 def test_order_comments_on_detail_page(
-    author_client, author, news,
+    author_client, comments_list, news, url
 ):
-    comments = []
-    for index in range(2):
-        comment = Comment.objects.create(
-            news=news, author=author, text=f'Текст {index}',
-            created=timezone.now() + timedelta(days=index)
-        )
-        comments.append(comment)
-    response = author_client.get(reverse('news:detail', args=(news.pk,)))
+    response = author_client.get(url)
     news = response.context['news']
-    assert news.comment_set.all()[0].created < news.comment_set.all(
-    )[1].created
+    comment = news.comment_set.all()
+    assert comment[0].created < comment[1].created
+    assert comment[0].created < comment[2].created
+    assert comment[0].created < comment[3].created
+    assert comment[1].created < comment[2].created
+    assert comment[1].created < comment[3].created
+    assert comment[2].created < comment[3].created
 
 
-@pytest.mark.django_db
-def test_detail_page_for_author_has_form(author_client, news):
-    detail_url = reverse('news:detail', args=(news.pk,))
-    response = author_client.get(detail_url)
-    assert 'form' in response.context
+@pytest.mark.parametrize(
+    'url',
+    (
+        (pytest.lazy_fixture('url_detail_page')),
+    )
+)
+def test_detail_page_for_author_has_form(author_client, url):
+    assert 'form' in author_client.get(url).context
+    form = author_client.get(url).context.get('form')
+    assert isinstance(form, CommentForm)
 
 
-@pytest.mark.django_db
-def test_detail_page_for_anonymous_user_has_no_form(client, news):
-    detail_url = reverse('news:detail', args=(news.pk,))
-    response = client.get(detail_url)
-    assert 'form' not in response.context
+@pytest.mark.parametrize(
+    'url',
+    (
+        (pytest.lazy_fixture('url_detail_page')),
+    )
+)
+def test_detail_page_for_anonymous_user_has_no_form(client, url):
+    assert 'form' not in client.get(url).context

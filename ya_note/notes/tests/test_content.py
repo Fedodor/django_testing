@@ -1,44 +1,41 @@
-from django.contrib.auth import get_user_model
-from django.test import TestCase
-from django.urls import reverse
-
-from notes.models import Note
-
-User = get_user_model()
+from constants import (
+    EDIT_URL, ParentTestClass, URL_ADD_NOTE, URL_NOTES_LIST
+)
+from notes.forms import NoteForm
 
 
-class TestContent(TestCase):
+class TestContent(ParentTestClass):
 
     @classmethod
     def setUpTestData(cls):
-        cls.author = User.objects.create(username='Лев Толстой')
-        cls.reader = User.objects.create(username='Читатель простой')
-        cls.note = Note.objects.create(
-            title='Заголовок', text='Текст заметки',
-            slug='note-slug', author=cls.author,
+        super().setUpTestData(
+            note=True, auth_client=True, auth_reader=True
         )
 
     def test_notes_list_for_different_users(self):
         users_bools = (
-            (self.author, True),
-            (self.reader, False),
+            (self.auth_client, True),
+            (self.auth_reader, False),
         )
         for user, bools in users_bools:
-            self.client.force_login(user)
             with self.subTest(user=user, bools=bools):
-                url = reverse('notes:list')
-                response = self.client.get(url)
+                response = self.client.get(URL_NOTES_LIST)
                 object_list = response.context['object_list']
                 self.assertEqual((self.note in object_list), bools)
+                self.assertEqual((self.note.title in object_list), bools)
+                self.assertEqual((self.note.text in object_list), bools)
+                self.assertEqual((self.note.slug in object_list), bools)
+                self.assertEqual((self.note.author in object_list), bools)
 
     def test_pages_contains_form(self):
         urls = (
-            ('notes:add', None),
-            ('notes:edit', (self.note.slug,)),
+            URL_ADD_NOTE,
+            EDIT_URL
         )
-        for name, args in urls:
-            self.client.force_login(self.author)
-            with self.subTest(name=name):
-                url = reverse(name, args=args)
-                response = self.client.get(url)
-                self.assertIn('form', response.context)
+        for url in urls:
+            self.auth_client = self.auth_client
+            with self.subTest(url=url):
+                self.assertIn('form', self.auth_client.get(url).context)
+                self.assertIsInstance(
+                    self.auth_client.get(url).context.get('form'), NoteForm
+                )
