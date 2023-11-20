@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from pytils.translit import slugify
 
-from constants import (
+from constants_test import (
     EDIT_URL, DELETE_URL, ParentTestClass, URL_ADD_NOTE, URL_SUCCESS
 )
 from notes.models import Note

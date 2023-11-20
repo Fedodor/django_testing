@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from constants import (
+from constants_test import (
     DELETE_URL, DETAIL_URL, EDIT_URL, ParentTestClass,
     URL_ADD_NOTE, URL_HOME_PAGE, URL_NOTES_LIST, URL_USER_LOGIN,
     URL_USER_LOGOUT, URL_USER_SIGNUP, URL_SUCCESS,

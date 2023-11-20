@@ -1,4 +1,4 @@
-from constants import (
+from constants_test import (
     EDIT_URL, ParentTestClass, URL_ADD_NOTE, URL_NOTES_LIST
 )
 from notes.forms import NoteForm
