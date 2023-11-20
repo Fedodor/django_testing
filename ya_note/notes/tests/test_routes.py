@@ -50,7 +50,7 @@ class ParentTestClass(TestCase):
 
 class TestPagesAvaibility(ParentTestClass):
 
-    def setUpTestData():
+    def setUpTestData(self):
         super().setUpTestData(
             note=True, author=True, reader=True,
             auth_client=True, auth_reader=True

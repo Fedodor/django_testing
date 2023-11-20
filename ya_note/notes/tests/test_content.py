@@ -42,7 +42,7 @@ class ParentTestClass(TestCase):
 
 class TestContent(ParentTestClass):
 
-    def setUpTestData():
+    def setUpTestData(self):
         super().setUpTestData(
             note=True, auth_client=True, auth_reader=True
         )
