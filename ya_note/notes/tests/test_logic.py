@@ -48,7 +48,8 @@ class ParentTestClass(TestCase):
 
 class TestNoteCreationEdit(ParentTestClass):
 
-    def setUpTestData(self):
+    @classmethod
+    def setUpTestData(cls):
         super().setUpTestData(
             note=True, author=True, reader=True,
             auth_client=True, auth_reader=True, auth_user=True,

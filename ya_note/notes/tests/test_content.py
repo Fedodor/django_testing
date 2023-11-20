@@ -42,7 +42,8 @@ class ParentTestClass(TestCase):
 
 class TestContent(ParentTestClass):
 
-    def setUpTestData(self):
+    @classmethod
+    def setUpTestData(cls):
         super().setUpTestData(
             note=True, auth_client=True, auth_reader=True
         )
