@@ -23,7 +23,7 @@ User = get_user_model()
 class ParentTestClass(TestCase):
     @classmethod
     def setUpTestData(
-        cls, note, author, reader, auth_client, client,
+        cls, note, author, reader, auth_client, anonymous,
         auth_user, auth_reader, form_data, new_note_form_data
     ):
         cls.author = User.objects.create(username='Лев Толстой')
@@ -43,10 +43,12 @@ class ParentTestClass(TestCase):
             'text': 'Текст заметки',
             'slug': 'note-slug'
         }
-        cls.auth_client = cls.client.force_login(cls.author)
+        cls.auth_client = Client()
+        cls.auth_client.force_login(cls.author)
         cls.auth_reader = cls.client.force_login(cls.reader)
         cls.auth_user = Client()
         cls.auth_user.force_login(cls.user)
+        cls.anonymous = Client()
 
 
 class TestNoteCreationEdit(ParentTestClass):
@@ -58,7 +60,7 @@ class TestNoteCreationEdit(ParentTestClass):
         super().setUpTestData(
             note=True, author=True, reader=True,
             auth_client=True, auth_reader=True, auth_user=True,
-            form_data=True, new_note_form_data=True, client=True
+            form_data=True, new_note_form_data=True, anonymous=True
         )
 
     def base_tests(self):
@@ -92,7 +94,7 @@ class TestNoteCreationEdit(ParentTestClass):
 
     def test_anonymous_user_cant_create_note(self):
         notes_count_in_db_before_add = list(Note.objects.all())
-        self.client.post(URL_ADD_NOTE, data=self.form_data)
+        self.anonymous.post(URL_ADD_NOTE, data=self.form_data)
         notes_count_in_db_after_add = list(Note.objects.all())
         note = set(notes_count_in_db_before_add).difference(
             set(notes_count_in_db_after_add)
@@ -134,7 +136,7 @@ class TestNoteCreationEdit(ParentTestClass):
         self.assertEqual(self.note.author, self.auth_client)
 
     def test_other_user_cant_edit_note(self):
-        response = self.auth_user.post(self.edit_url, self.form_data)
+        response = self.auth_user.post(EDIT_URL, self.form_data)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         note_from_db = Note.objects.get(pk=self.note.pk)
         self.assertEqual(self.note.title, note_from_db.title)
@@ -154,7 +156,7 @@ class TestNoteCreationEdit(ParentTestClass):
 
     def test_other_user_cant_delete_note(self):
         notes_count_in_db_before_delete = Note.objects.count()
-        response = self.auth_user.delete(self.delete_url)
+        response = self.auth_user.delete(DELETE_URL)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         notes_count_in_db_after_delete = Note.objects.count()
         self.assertEqual(
