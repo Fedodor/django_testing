@@ -53,13 +53,12 @@ class TestNoteCreationEdit(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls, note, author, reader, auth_client,
-        auth_user, auth_reader, form_data, new_note_form_data
+        cls
     ):
         super().setUpTestData(
-            cls, note, author, reader,
-            auth_client, auth_reader, auth_user,
-            form_data, new_note_form_data
+            note=True, author=True, reader=True,
+            auth_client=True, auth_reader=True, auth_user=True,
+            form_data=True, new_note_form_data=True
         )
 
     def base_tests(self):

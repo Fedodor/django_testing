@@ -56,12 +56,11 @@ class TestPagesAvaibility(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls, note, auth_client,
-        author, reader, auth_reader
+        cls
     ):
         super().setUpTestData(
-            cls, note, author, reader,
-            auth_client, auth_reader
+            cls, note=True, author=True, reader=True,
+            auth_client=True, auth_reader=True
         )
 
     def test_pages_availability_for_all_users(self):
