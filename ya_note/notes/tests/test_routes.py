@@ -26,7 +26,7 @@ class ParentTestClass(TestCase):
     @classmethod
     @classmethod
     def setUpTestData(
-        cls, note, auth_client,
+        cls, note, auth_client, anonymous,
         author, reader, auth_reader
     ):
         cls.author = User.objects.create(username='Лев Толстой')
@@ -63,7 +63,7 @@ class TestPagesAvaibility(ParentTestClass):
     ):
         super().setUpTestData(
             note=True, author=True, reader=True,
-            auth_client=True, auth_reader=True
+            auth_client=True, auth_reader=True, anonymous=True
         )
 
     def test_pages_availability_for_all_users(self):
@@ -77,16 +77,18 @@ class TestPagesAvaibility(ParentTestClass):
             [EDIT_URL, self.auth_reader, HTTPStatus.NOT_FOUND],
             [DELETE_URL, self.auth_reader, HTTPStatus.NOT_FOUND],
             [DETAIL_URL, self.auth_reader, HTTPStatus.NOT_FOUND],
-            [URL_HOME_PAGE, self.reader, HTTPStatus.NOT_FOUND],
-            [URL_USER_LOGIN, self.reader, HTTPStatus.NOT_FOUND],
-            [URL_USER_LOGOUT, self.reader, HTTPStatus.NOT_FOUND],
-            [URL_USER_SIGNUP, self.reader, HTTPStatus.NOT_FOUND],
+            [URL_HOME_PAGE, self.reader, HTTPStatus.OK],
+            [URL_USER_LOGIN, self.reader, HTTPStatus.OK],
+            [URL_USER_LOGOUT, self.reader, HTTPStatus.OK],
+            [URL_USER_SIGNUP, self.reader, HTTPStatus.OK],
 
         ]
-        for url, user, expected_status in data:
-            with self.subTest(client=user):
+        for url, some_user, expected_status in data:
+            with self.subTest(
+                some_user=some_user, url=url, expected_status=expected_status
+            ):
                 self.assertEqual(
-                    self.client.get(url).status_code, expected_status
+                    self.some_user.get(url).status_code, expected_status
                 )
 
 
@@ -96,7 +98,7 @@ class TestRedirects(ParentTestClass):
     def setUpTestData(cls):
         super().setUpTestData(
             note=True, author=True, reader=True,
-            auth_client=True, auth_reader=True
+            auth_client=True, auth_reader=True, anonymous=True
         )
 
     def test_redirect_for_anonymous_client(self):
@@ -104,4 +106,4 @@ class TestRedirects(ParentTestClass):
             DETAIL_URL, EDIT_URL, DELETE_URL
         ]:
             redirect_url = f'{URL_USER_LOGIN}?next={url}'
-            self.assertRedirects(self.client.get(url), redirect_url)
+            self.assertRedirects(self.anonymous.get(url), redirect_url)

@@ -59,13 +59,15 @@ class TestContent(ParentTestClass):
         )
         for user, bools in users_bools:
             with self.subTest(user=user, bools=bools):
-                response = self.anonymous.get(URL_NOTES_LIST)
-                object_list = response.context['object_list']
-                self.assertEqual((self.note in object_list), bools)
-                self.assertEqual((self.note.title in object_list), bools)
-                self.assertEqual((self.note.text in object_list), bools)
-                self.assertEqual((self.note.slug in object_list), bools)
-                self.assertEqual((self.note.author in object_list), bools)
+                notes = self.user.get(URL_NOTES_LIST).context['object_list']
+                self.assertIn(self.note, notes)
+                self.assertEqual(len(notes), 1)
+                note = notes.get(pk=self.note.pk)
+                self.assertEqual((note in notes), bools)
+                self.assertEqual((note.title in self.note.slug), bools)
+                self.assertEqual((note.text in self.note.text), bools)
+                self.assertEqual((note.slug in self.note.slug), bools)
+                self.assertEqual((note.author in self.note.author), bools)
 
     def test_pages_contains_form(self):
         urls = (
