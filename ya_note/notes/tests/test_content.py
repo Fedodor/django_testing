@@ -45,7 +45,7 @@ class TestContent(ParentTestClass):
     @classmethod
     def setUpTestData(cls, note, auth_client, auth_reader):
         super().setUpTestData(
-            note, auth_client, auth_reader
+            cls, note, auth_client, auth_reader
         )
 
     def test_notes_list_for_different_users(self):

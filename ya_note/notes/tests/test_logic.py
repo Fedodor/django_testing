@@ -57,7 +57,7 @@ class TestNoteCreationEdit(ParentTestClass):
         auth_user, auth_reader, form_data, new_note_form_data
     ):
         super().setUpTestData(
-            note, author, reader,
+            cls, note, author, reader,
             auth_client, auth_reader, auth_user,
             form_data, new_note_form_data
         )

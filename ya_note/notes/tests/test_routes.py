@@ -60,7 +60,7 @@ class TestPagesAvaibility(ParentTestClass):
         author, reader, auth_reader
     ):
         super().setUpTestData(
-            note, author, reader,
+            cls, note, author, reader,
             auth_client, auth_reader
         )
 
