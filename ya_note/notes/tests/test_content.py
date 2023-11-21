@@ -55,11 +55,11 @@ class TestContent(ParentTestClass):
     def test_notes_list_for_different_users(self):
         users_bools = (
             (self.auth_client, True),
-            (self.auth_reader, False),
+            (self.auth_reader, False)
         )
         for user, bools in users_bools:
             with self.subTest(user=user, bools=bools):
-                notes = self.user.get(URL_NOTES_LIST).context['object_list']
+                notes = user.get(URL_NOTES_LIST).context['object_list']
                 self.assertIn(self.note, notes)
                 self.assertEqual(len(notes), 1)
                 note = notes.get(pk=self.note.pk)
