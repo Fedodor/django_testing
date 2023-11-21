@@ -53,8 +53,8 @@ class TestPagesAvaibility(ParentTestClass):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData(
-            note=True, author=True, reader=True,
-            auth_client=True, auth_reader=True
+            cls.note, cls.author, cls.reader,
+            cls.auth_client, cls.auth_reader
         )
 
     def test_pages_availability_for_all_users(self):
@@ -86,7 +86,7 @@ class TestRedirects(ParentTestClass):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData(
-            author=True, reader=True,
+            cls.author, cls.reader,
         )
 
     def test_redirect_for_anonymous_client(self):
