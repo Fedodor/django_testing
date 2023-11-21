@@ -22,7 +22,10 @@ User = get_user_model()
 
 class ParentTestClass(TestCase):
     @classmethod
-    def setUpTestData(cls):
+    def setUpTestData(
+        cls, note, author, reader, auth_client,
+        auth_user, auth_reader, form_data, new_note_form_data
+    ):
         cls.author = User.objects.create(username='Лев Толстой')
         cls.reader = User.objects.create(username='Читатель простой')
         cls.user = User.objects.create(username='Мимо Крокодил')

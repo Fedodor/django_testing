@@ -24,7 +24,11 @@ User = get_user_model()
 
 class ParentTestClass(TestCase):
     @classmethod
-    def setUpTestData(cls):
+    @classmethod
+    def setUpTestData(
+        cls, note, auth_client,
+        author, reader, auth_reader
+    ):
         cls.author = User.objects.create(username='Лев Толстой')
         cls.reader = User.objects.create(username='Читатель простой')
         cls.user = User.objects.create(username='Мимо Крокодил')
@@ -88,9 +92,7 @@ class TestRedirects(ParentTestClass):
 
     @classmethod
     def setUpTestData(cls):
-        super().setUpTestData(
-            cls.author, cls.reader,
-        )
+        super().setUpTestData()
 
     def test_redirect_for_anonymous_client(self):
         for url in [
