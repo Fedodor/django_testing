@@ -50,7 +50,7 @@ class TestNoteCreationEdit(ParentTestClass):
 
     @classmethod
     def setUpTestData(cls):
-        super(TestNoteCreationEdit, cls).setUpTestData(
+        super().setUpTestData(
             note=True, author=True, reader=True,
             auth_client=True, auth_reader=True, auth_user=True,
             form_data=True, new_note_form_data=True
