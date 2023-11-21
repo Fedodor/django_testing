@@ -48,7 +48,8 @@ class ParentTestClass(TestCase):
         }
         cls.auth_client = Client()
         cls.auth_client.force_login(cls.author)
-        cls.auth_reader = cls.client.force_login(cls.reader)
+        cls.auth_reader = Client()
+        cls.auth_reader.force_login(cls.reader)
         cls.auth_user = Client()
         cls.auth_user.force_login(cls.user)
         cls.anonymous = Client()
