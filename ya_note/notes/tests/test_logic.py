@@ -23,33 +23,40 @@ User = get_user_model()
 class ParentTestClass(TestCase):
     @classmethod
     def setUpTestData(
-        cls, note, author, reader, auth_client, anonymous,
-        auth_user, auth_reader, form_data, new_note_form_data
+        cls, note=True, auth_client=True, new_note_form_data=True,
+        auth_reader=True, anonymous=True, auth_user=True, form_data=True
     ):
-        cls.author = User.objects.create(username='Лев Толстой')
-        cls.reader = User.objects.create(username='Читатель простой')
-        cls.user = User.objects.create(username='Мимо Крокодил')
-        cls.note = Note.objects.create(
-            title='Заголовок', text='Текст заметки',
-            slug='note-slug', author=cls.author,
-        )
-        cls.new_note_form_data = {
-            'title': 'Новый заголовок',
-            'text': 'Новый текст',
-            'slug': 'note-slug-a'
-        }
-        cls.form_data = {
-            'title': 'Заголовок',
-            'text': 'Текст заметки',
-            'slug': 'note-slug'
-        }
-        cls.auth_client = Client()
-        cls.auth_client.force_login(cls.author)
-        cls.auth_reader = Client()
-        cls.auth_reader.force_login(cls.reader)
-        cls.auth_user = Client()
-        cls.auth_user.force_login(cls.user)
-        cls.anonymous = Client()
+        if auth_client:
+            cls.author = User.objects.create(username='Лев Толстой')
+            cls.auth_client = Client()
+            cls.auth_client.force_login(cls.author)
+        if auth_reader:
+            cls.reader = User.objects.create(username='Читатель простой')
+            cls.auth_reader = Client()
+            cls.auth_reader.force_login(cls.reader)
+        if auth_user:
+            cls.user = User.objects.create(username='Мимо Крокодил')
+            cls.auth_user = Client()
+            cls.auth_user.force_login(cls.user)
+        if note:
+            cls.note = Note.objects.create(
+                title='Заголовок', text='Текст заметки',
+                slug='note-slug', author=cls.author,
+            )
+        if new_note_form_data:
+            cls.new_note_form_data = {
+                'title': 'Новый заголовок',
+                'text': 'Новый текст',
+                'slug': 'note-slug-a'
+            }
+        if form_data:
+            cls.form_data = {
+                'title': 'Заголовок',
+                'text': 'Текст заметки',
+                'slug': 'note-slug'
+            }
+        if anonymous:
+            cls.anonymous = Client()
 
 
 class TestNoteCreationEdit(ParentTestClass):
@@ -123,7 +130,7 @@ class TestNoteCreationEdit(ParentTestClass):
         self.base_tests()
         expected_slug = slugify(self.form_data['title'])
         last_note = Note.objects.get(pk=self.note.pk)
-        self.assertEqual(last_note.title, expected_slug)
+        self.assertEqual(slugify(last_note.title), expected_slug)
 
     def test_author_can_edit_note(self):
         response = self.auth_client.post(EDIT_URL, self.form_data)

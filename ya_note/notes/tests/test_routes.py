@@ -24,46 +24,50 @@ User = get_user_model()
 
 class ParentTestClass(TestCase):
     @classmethod
-    @classmethod
     def setUpTestData(
-        cls, note, auth_client, anonymous,
-        author, reader, auth_reader
+        cls, note=True, auth_client=True, new_note_form_data=True,
+        auth_reader=True, anonymous=True, auth_user=True, form_data=True
     ):
-        cls.author = User.objects.create(username='Лев Толстой')
-        cls.reader = User.objects.create(username='Читатель простой')
-        cls.user = User.objects.create(username='Мимо Крокодил')
-        cls.note = Note.objects.create(
-            title='Заголовок', text='Текст заметки',
-            slug='note-slug', author=cls.author,
-        )
-        cls.new_note_form_data = {
-            'title': 'Новый заголовок',
-            'text': 'Новый текст',
-            'slug': 'note-slug-a'
-        }
-        cls.form_data = {
-            'title': 'Заголовок',
-            'text': 'Текст заметки',
-            'slug': 'note-slug'
-        }
-        cls.auth_client = Client()
-        cls.auth_client.force_login(cls.author)
-        cls.auth_reader = Client()
-        cls.auth_reader.force_login(cls.reader)
-        cls.auth_user = Client()
-        cls.auth_user.force_login(cls.user)
-        cls.anonymous = Client()
+        if auth_client:
+            cls.author = User.objects.create(username='Лев Толстой')
+            cls.auth_client = Client()
+            cls.auth_client.force_login(cls.author)
+        if auth_reader:
+            cls.reader = User.objects.create(username='Читатель простой')
+            cls.auth_reader = Client()
+            cls.auth_reader.force_login(cls.reader)
+        if auth_user:
+            cls.user = User.objects.create(username='Мимо Крокодил')
+            cls.auth_user = Client()
+            cls.auth_user.force_login(cls.user)
+        if note:
+            cls.note = Note.objects.create(
+                title='Заголовок', text='Текст заметки',
+                slug='note-slug', author=cls.author,
+            )
+        if new_note_form_data:
+            cls.new_note_form_data = {
+                'title': 'Новый заголовок',
+                'text': 'Новый текст',
+                'slug': 'note-slug-a'
+            }
+        if form_data:
+            cls.form_data = {
+                'title': 'Заголовок',
+                'text': 'Текст заметки',
+                'slug': 'note-slug'
+            }
+        if anonymous:
+            cls.anonymous = Client()
 
 
 class TestPagesAvaibility(ParentTestClass):
 
     @classmethod
-    def setUpTestData(
-        cls
-    ):
+    def setUpTestData(cls):
         super().setUpTestData(
-            note=True, author=True, reader=True,
-            auth_client=True, auth_reader=True, anonymous=True
+            cls, note=False, auth_client=True, new_note_form_data=False,
+            auth_reader=True, anonymous=True, auth_user=False, form_data=False
         )
 
     def test_pages_availability_for_all_users(self):
@@ -96,8 +100,8 @@ class TestRedirects(ParentTestClass):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData(
-            note=True, author=True, reader=True,
-            auth_client=True, auth_reader=True, anonymous=True
+            cls, note=False, auth_client=False, new_note_form_data=False,
+            auth_reader=False, anonymous=True, auth_user=False, form_data=False
         )
 
     def test_redirect_for_anonymous_client(self):
