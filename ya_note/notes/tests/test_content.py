@@ -57,13 +57,10 @@ class TestContent(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls, note=True, auth_client=True, new_note_form_data=True,
-        auth_reader=True, anonymous=True, auth_user=True, form_data=True
+        cls, note=True, auth_client=True, new_note_form_data=False,
+        auth_reader=True, anonymous=False, auth_user=False, form_data=False
     ):
-        super().setUpTestData(
-            cls, note=True, auth_client=True, new_note_form_data=False,
-            auth_reader=True, anonymous=False, auth_user=False, form_data=False
-        )
+        super().setUpTestData()
 
     def test_notes_list_for_different_users(self):
         users_bools = (
