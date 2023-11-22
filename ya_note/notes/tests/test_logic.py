@@ -123,7 +123,7 @@ class TestNoteCreationEdit(ParentTestClass):
         self.base_tests()
         expected_slug = slugify(self.form_data['title'])
         last_note = Note.objects.get(pk=self.note.pk)
-        self.assertEqual(last_note.slug, expected_slug)
+        self.assertEqual(last_note.title, expected_slug)
 
     def test_author_can_edit_note(self):
         response = self.auth_client.post(EDIT_URL, self.form_data)

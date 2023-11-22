@@ -102,8 +102,8 @@ class TestRedirects(ParentTestClass):
         )
 
     def test_redirect_for_anonymous_client(self):
-        for url in [
+        for url in (
             DETAIL_URL, EDIT_URL, DELETE_URL
-        ]:
+        ):
             redirect_url = f'{URL_USER_LOGIN}?next={url}'
             self.assertRedirects(self.anonymous.get(url), redirect_url)
