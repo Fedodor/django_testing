@@ -67,22 +67,21 @@ class TestPagesAvaibility(ParentTestClass):
         )
 
     def test_pages_availability_for_all_users(self):
-        data = [
-            [URL_ADD_NOTE, self.auth_client, HTTPStatus.OK],
-            [URL_NOTES_LIST, self.auth_client, HTTPStatus.OK],
-            [URL_SUCCESS, self.auth_client, HTTPStatus.OK],
-            [EDIT_URL, self.auth_client, HTTPStatus.OK],
-            [DELETE_URL, self.auth_client, HTTPStatus.OK],
-            [DETAIL_URL, self.auth_client, HTTPStatus.OK],
-            [EDIT_URL, self.auth_reader, HTTPStatus.NOT_FOUND],
-            [DELETE_URL, self.auth_reader, HTTPStatus.NOT_FOUND],
-            [DETAIL_URL, self.auth_reader, HTTPStatus.NOT_FOUND],
-            [URL_HOME_PAGE, self.reader, HTTPStatus.OK],
-            [URL_USER_LOGIN, self.reader, HTTPStatus.OK],
-            [URL_USER_LOGOUT, self.reader, HTTPStatus.OK],
-            [URL_USER_SIGNUP, self.reader, HTTPStatus.OK],
-
-        ]
+        data = (
+            (URL_ADD_NOTE, self.auth_client, HTTPStatus.OK),
+            (URL_NOTES_LIST, self.auth_client, HTTPStatus.OK),
+            (URL_SUCCESS, self.auth_client, HTTPStatus.OK),
+            (EDIT_URL, self.auth_client, HTTPStatus.OK),
+            (DELETE_URL, self.auth_client, HTTPStatus.OK),
+            (DETAIL_URL, self.auth_client, HTTPStatus.OK),
+            (EDIT_URL, self.auth_reader, HTTPStatus.NOT_FOUND),
+            (DELETE_URL, self.auth_reader, HTTPStatus.NOT_FOUND),
+            (DETAIL_URL, self.auth_reader, HTTPStatus.NOT_FOUND),
+            (URL_HOME_PAGE, self.anonymous, HTTPStatus.OK),
+            (URL_USER_LOGIN, self.anonymous, HTTPStatus.OK),
+            (URL_USER_LOGOUT, self.anonymous, HTTPStatus.OK),
+            (URL_USER_SIGNUP, self.anonymous, HTTPStatus.OK),
+        )
         for url, some_user, expected_status in data:
             with self.subTest(
                 some_user=some_user, url=url, expected_status=expected_status
@@ -103,7 +102,8 @@ class TestRedirects(ParentTestClass):
 
     def test_redirect_for_anonymous_client(self):
         for url in (
-            DETAIL_URL, EDIT_URL, DELETE_URL
+            DETAIL_URL, EDIT_URL, DELETE_URL,
         ):
-            redirect_url = f'{URL_USER_LOGIN}?next={url}'
-            self.assertRedirects(self.anonymous.get(url), redirect_url)
+            with self.subTest(url=url):
+                redirect_url = f'{URL_USER_LOGIN}?next={url}'
+                self.assertRedirects(self.anonymous.get(url), redirect_url)

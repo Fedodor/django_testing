@@ -60,7 +60,7 @@ class TestContent(ParentTestClass):
         for user, bools in users_bools:
             with self.subTest(user=user, bools=bools):
                 notes = user.get(URL_NOTES_LIST).context['object_list']
-                if user == self.auth_client:
+                if user is self.auth_client:
                     self.assertIn(self.note, notes)
                     self.assertEqual(len(notes), 1)
                 note = notes.get(pk=self.note.pk)
@@ -77,7 +77,8 @@ class TestContent(ParentTestClass):
         )
         for url in urls:
             with self.subTest(url=url):
-                self.assertIn('form', self.auth_client.get(url).context)
+                response = self.auth_client.get(url)
+                self.assertIn('form', response.context)
                 self.assertIsInstance(
                     self.auth_client.get(url).context.get('form'), NoteForm
                 )
