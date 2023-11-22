@@ -56,7 +56,10 @@ class ParentTestClass(TestCase):
 class TestContent(ParentTestClass):
 
     @classmethod
-    def setUpTestData(cls):
+    def setUpTestData(
+        cls, note=True, auth_client=True, new_note_form_data=True,
+        auth_reader=True, anonymous=True, auth_user=True, form_data=True
+    ):
         super().setUpTestData(
             cls, note=True, auth_client=True, new_note_form_data=False,
             auth_reader=True, anonymous=False, auth_user=False, form_data=False

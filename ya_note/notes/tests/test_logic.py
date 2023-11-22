@@ -63,12 +63,12 @@ class TestNoteCreationEdit(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls
+        cls, note=True, auth_client=True, new_note_form_data=True,
+        auth_reader=True, anonymous=True, auth_user=True, form_data=True
     ):
         super().setUpTestData(
-            note=True, author=True, reader=True,
-            auth_client=True, auth_reader=True, auth_user=True,
-            form_data=True, new_note_form_data=True, anonymous=True
+            cls, note=False, auth_client=True, new_note_form_data=True,
+            auth_reader=False, anonymous=True, auth_user=True, form_data=True
         )
 
     def base_tests(self):
