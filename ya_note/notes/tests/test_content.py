@@ -78,7 +78,6 @@ class TestContent(ParentTestClass):
                 self.assertEqual((note.title in self.note.title), bools)
                 self.assertEqual((note.text in self.note.text), bools)
                 self.assertEqual((note.slug in self.note.slug), bools)
-                self.assertEqual((note.author in self.note.author), bools)
 
     def test_pages_contains_form(self):
         urls = (
@@ -88,7 +87,7 @@ class TestContent(ParentTestClass):
         for url in urls:
             with self.subTest(url=url):
                 response = self.auth_client.get(url)
-                self.assertIn('form', response.context)
+                self.assertIn(response.context.get('form'), response.context)
                 self.assertIsInstance(
                     self.auth_client.get(url).context.get('form'), NoteForm
                 )

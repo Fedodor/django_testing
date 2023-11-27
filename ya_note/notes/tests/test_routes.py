@@ -71,28 +71,48 @@ class TestPagesAvaibility(ParentTestClass):
         super().setUpTestData()
 
     def test_pages_availability_for_all_users(self):
-        data = (
-            (URL_ADD_NOTE, self.auth_client, HTTPStatus.OK),
-            (URL_NOTES_LIST, self.auth_client, HTTPStatus.OK),
-            (URL_SUCCESS, self.auth_client, HTTPStatus.OK),
-            (EDIT_URL, self.auth_client, HTTPStatus.OK),
-            (DELETE_URL, self.auth_client, HTTPStatus.OK),
-            (DETAIL_URL, self.auth_client, HTTPStatus.OK),
-            (EDIT_URL, self.auth_reader, HTTPStatus.NOT_FOUND),
-            (DELETE_URL, self.auth_reader, HTTPStatus.NOT_FOUND),
-            (DETAIL_URL, self.auth_reader, HTTPStatus.NOT_FOUND),
-            (URL_HOME_PAGE, self.anonymous, HTTPStatus.OK),
-            (URL_USER_LOGIN, self.anonymous, HTTPStatus.OK),
-            (URL_USER_LOGOUT, self.anonymous, HTTPStatus.OK),
-            (URL_USER_SIGNUP, self.anonymous, HTTPStatus.OK),
-        )
-        for url, some_user, expected_status in data:
-            with self.subTest(
-                some_user=some_user, url=url, expected_status=expected_status
-            ):
-                self.assertEqual(
-                    self.some_user.get(url).status_code, expected_status
-                )
+        data = {
+            URL_HOME_PAGE: (
+                (self.client, HTTPStatus.OK),
+                (self.auth_client, HTTPStatus.OK)
+            ),
+            URL_USER_LOGIN: (
+                (self.client, HTTPStatus.OK),
+                (self.auth_client, HTTPStatus.OK)
+            ),
+            URL_USER_SIGNUP: (
+                (self.client, HTTPStatus.OK),
+                (self.auth_client, HTTPStatus.OK)
+            ),
+            URL_NOTES_LIST: ((self.auth_reader, HTTPStatus.OK),),
+            URL_ADD_NOTE: ((self.auth_reader, HTTPStatus.OK),),
+            URL_SUCCESS: ((self.auth_reader, HTTPStatus.OK),),
+            EDIT_URL: (
+                (self.auth_reader, HTTPStatus.NOT_FOUND),
+                (self.auth_client, HTTPStatus.OK)
+            ),
+            DELETE_URL: (
+                (self.auth_reader, HTTPStatus.NOT_FOUND),
+                (self.auth_client, HTTPStatus.OK)
+            ),
+            DETAIL_URL: (
+                (self.auth_reader, HTTPStatus.NOT_FOUND),
+                (self.auth_client, HTTPStatus.OK)
+            ),
+            URL_USER_LOGOUT: (
+                (self.client, HTTPStatus.OK),
+                (self.auth_client, HTTPStatus.OK)
+            ),
+        }
+        for item in data.items():
+            urls, user_statuses = item
+            with self.subTest(urls=urls):
+                for user_status in user_statuses:
+                    user, status = user_status
+                    with self.subTest(user_status=user_status):
+                        self.assertEqual(
+                            user.get(urls).status_code, status
+                        )
 
 
 class TestRedirects(ParentTestClass):
@@ -110,4 +130,4 @@ class TestRedirects(ParentTestClass):
         ):
             with self.subTest(url=url):
                 redirect_url = f'{URL_USER_LOGIN}?next={url}'
-                self.assertRedirects(self.anonymous.get(url), redirect_url)
+                self.assertRedirects(self.client.get(url), redirect_url)
