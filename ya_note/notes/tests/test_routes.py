@@ -65,13 +65,10 @@ class TestPagesAvaibility(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls, note=True, auth_client=True, new_note_form_data=True,
-        auth_reader=True, anonymous=True, auth_user=True, form_data=True
-    ):
-        super().setUpTestData(
-            cls, note=False, auth_client=True, new_note_form_data=False,
+        cls, note=False, auth_client=True, new_note_form_data=False,
             auth_reader=True, anonymous=True, auth_user=False, form_data=False
-        )
+    ):
+        super().setUpTestData()
 
     def test_pages_availability_for_all_users(self):
         data = (
@@ -101,11 +98,11 @@ class TestPagesAvaibility(ParentTestClass):
 class TestRedirects(ParentTestClass):
 
     @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData(
-            cls, note=False, auth_client=False, new_note_form_data=False,
-            auth_reader=False, anonymous=True, auth_user=False, form_data=False
-        )
+    def setUpTestData(
+        cls, note=False, auth_client=False, new_note_form_data=False,
+        auth_reader=False, anonymous=True, auth_user=False, form_data=False
+    ):
+        super().setUpTestData()
 
     def test_redirect_for_anonymous_client(self):
         for url in (

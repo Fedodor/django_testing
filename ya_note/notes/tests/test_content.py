@@ -67,10 +67,10 @@ class TestContent(ParentTestClass):
             (self.auth_client, True),
             (self.auth_reader, False)
         )
-        for user, bools in users_bools:
-            with self.subTest(user=user, bools=bools):
-                notes = user.get(URL_NOTES_LIST).context['object_list']
-                if user is self.auth_client:
+        for users, bools in users_bools:
+            with self.subTest(users=users, bools=bools):
+                notes = users.get(URL_NOTES_LIST).context['object_list']
+                if users is self.auth_client:
                     self.assertIn(self.note, notes)
                     self.assertEqual(len(notes), 1)
                 note = notes.get(pk=self.note.pk)

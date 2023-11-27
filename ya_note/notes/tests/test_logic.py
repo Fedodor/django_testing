@@ -63,13 +63,10 @@ class TestNoteCreationEdit(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls, note=True, auth_client=True, new_note_form_data=True,
-        auth_reader=True, anonymous=True, auth_user=True, form_data=True
-    ):
-        super().setUpTestData(
-            cls, note=False, auth_client=True, new_note_form_data=True,
+        cls, note=False, auth_client=True, new_note_form_data=True,
             auth_reader=False, anonymous=True, auth_user=True, form_data=True
-        )
+    ):
+        super().setUpTestData()
 
     def base_tests(self):
         notes_count_in_db_before_add = list(Note.objects.all())
