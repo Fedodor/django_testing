@@ -86,9 +86,9 @@ class TestContent(ParentTestClass):
             ('notes:add', None),
             ('notes:edit', (self.note.slug,)),
         )
-        for url in urls:
-            with self.subTest(url=url):
+        for name, args in urls:
+            with self.subTest(name=name):
+                url = reverse(name, args=args)
                 response = self.auth_client.get(url)
-                form = response.context.get('form')
-                self.assertIsNotNone(form)
-                self.assertIsInstance(form, NoteForm)
+                self.assertIn('form', response.context)
+                self.assertIsInstance(response.context.get('form'), NoteForm)
