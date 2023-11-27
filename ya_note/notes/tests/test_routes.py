@@ -65,7 +65,7 @@ class TestPagesAvaibility(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls, note=False, auth_client=True, new_note_form_data=False,
+        cls, note=True, auth_client=True, new_note_form_data=False,
             auth_reader=True, anonymous=True, auth_user=False, form_data=False
     ):
         super().setUpTestData()
@@ -119,7 +119,7 @@ class TestRedirects(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls, note=False, auth_client=False, new_note_form_data=False,
+        cls, note=True, auth_client=False, new_note_form_data=False,
         auth_reader=False, anonymous=True, auth_user=False, form_data=False
     ):
         super().setUpTestData()
