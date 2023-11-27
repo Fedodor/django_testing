@@ -73,6 +73,7 @@ class TestPagesAvaibility(ParentTestClass):
         super().setUpTestData()
 
     def test_pages_availability_for_all_users(self):
+        self.auth_client.post(URL_ADD_NOTE, data=self.form_data)
         data = {
             URL_HOME_PAGE: (
                 (self.client, HTTPStatus.OK),
