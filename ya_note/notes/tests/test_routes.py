@@ -14,7 +14,7 @@ URL_NOTES_LIST = reverse('notes:list')
 URL_ADD_NOTE = reverse('notes:add')
 URL_SUCCESS = reverse('notes:success')
 
-NOTE_SLUG = 'bulka'
+NOTE_SLUG = 'note-slug'
 EDIT_URL = reverse('notes:edit', args=(NOTE_SLUG,)),
 DELETE_URL = reverse('notes:delete', args=(NOTE_SLUG,)),
 DETAIL_URL = reverse('notes:detail', args=(NOTE_SLUG,)),
