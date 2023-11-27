@@ -128,9 +128,8 @@ class TestRedirects(ParentTestClass):
         super().setUpTestData()
 
     def test_redirect_for_anonymous_client(self):
-        for url in (
-            DETAIL_URL, EDIT_URL, DELETE_URL,
-        ):
-            with self.subTest(url=url):
+        for name in ('notes:detail', 'notes:edit', 'notes:delete'):
+            with self.subTest(name=name):
+                url = reverse(name, args=(self.note.slug,))
                 redirect_url = f'{URL_USER_LOGIN}?next={url}'
                 self.assertRedirects(self.client.get(url), redirect_url)
