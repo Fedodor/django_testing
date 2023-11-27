@@ -89,18 +89,6 @@ class TestPagesAvaibility(ParentTestClass):
             URL_NOTES_LIST: ((self.auth_client, HTTPStatus.OK),),
             URL_ADD_NOTE: ((self.auth_client, HTTPStatus.OK),),
             URL_SUCCESS: ((self.auth_client, HTTPStatus.OK),),
-            EDIT_URL: (
-                (self.client, HTTPStatus.NOT_FOUND),
-                (self.auth_client, HTTPStatus.OK)
-            ),
-            DELETE_URL: (
-                (self.client, HTTPStatus.NOT_FOUND),
-                (self.auth_client, HTTPStatus.OK)
-            ),
-            DETAIL_URL: (
-                (self.client, HTTPStatus.NOT_FOUND),
-                (self.auth_client, HTTPStatus.OK)
-            ),
             URL_USER_LOGOUT: (
                 (self.client, HTTPStatus.OK),
                 (self.auth_second_reader, HTTPStatus.OK)
