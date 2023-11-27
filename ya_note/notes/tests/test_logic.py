@@ -24,7 +24,8 @@ class ParentTestClass(TestCase):
     @classmethod
     def setUpTestData(
         cls, note=True, auth_client=True, new_note_form_data=True,
-        auth_reader=True, anonymous=True, auth_user=True, form_data=True
+        auth_reader=True, anonymous=True, auth_second_reader=True,
+        form_data=True
     ):
         if auth_client:
             cls.author = User.objects.create(username='Лев Толстой')
@@ -34,10 +35,10 @@ class ParentTestClass(TestCase):
             cls.reader = User.objects.create(username='Читатель простой')
             cls.auth_reader = Client()
             cls.auth_reader.force_login(cls.reader)
-        if auth_user:
-            cls.user = User.objects.create(username='Мимо Крокодил')
-            cls.auth_user = Client()
-            cls.auth_user.force_login(cls.user)
+        if auth_second_reader:
+            cls.second_reader = User.objects.create(username='Мимо Крокодил')
+            cls.auth_second_reader = Client()
+            cls.auth_second_reader.force_login(cls.second_reader)
         if note:
             cls.note = Note.objects.create(
                 title='Заголовок', text='Текст заметки',
@@ -63,14 +64,17 @@ class TestNoteCreationEdit(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls, note=False, auth_client=True, new_note_form_data=True,
-            auth_reader=False, anonymous=True, auth_user=True, form_data=True
+        cls, note=True, auth_client=True, new_note_form_data=True,
+            auth_reader=False, anonymous=True, auth_second_reader=True,
+            form_data=True
     ):
         super().setUpTestData()
 
     def base_tests(self):
         notes_count_in_db_before_add = list(Note.objects.all())
-        response = self.auth_user.post(URL_ADD_NOTE, data=self.form_data)
+        response = self.auth_second_reader.post(
+            URL_ADD_NOTE, data=self.form_data
+        )
         self.assertRedirects(response, URL_SUCCESS)
         notes_count_in_db_after_add = list(Note.objects.all())
         note_diff = set(notes_count_in_db_after_add).difference(
@@ -92,7 +96,7 @@ class TestNoteCreationEdit(ParentTestClass):
         self.assertEqual(new_note.title, self.form_data['title'])
         self.assertEqual(new_note.text, self.form_data['text'])
         self.assertEqual(new_note.slug, self.form_data['slug'])
-        self.assertEqual(new_note.author, self.auth_user)
+        self.assertEqual(new_note.author, self.auth_second_reader)
 
     def test_anonymous_user_cant_create_note(self):
         notes_count_in_db_before_add = list(Note.objects.all())
@@ -113,7 +117,9 @@ class TestNoteCreationEdit(ParentTestClass):
 
     def test_unique_slug(self):
         notes_count_in_db_before_add = list(Note.objects.all())
-        response = self.auth_user.post(URL_ADD_NOTE, data=self.form_data)
+        response = self.auth_second_reader.post(
+            URL_ADD_NOTE, data=self.form_data
+        )
         notes_count_in_db_after_add = list(Note.objects.all())
         self.assertFormError(response, form='form', field='slug',
                              errors=(self.form_data['slug'] + WARNING))
@@ -159,7 +165,7 @@ class TestNoteCreationEdit(ParentTestClass):
 
     def test_other_user_cant_delete_note(self):
         notes_count_in_db_before_delete = Note.objects.count()
-        response = self.auth_user.delete(DELETE_URL)
+        response = self.auth_second_reader.delete(DELETE_URL)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         notes_count_in_db_after_delete = Note.objects.count()
         self.assertEqual(

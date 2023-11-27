@@ -18,7 +18,8 @@ class ParentTestClass(TestCase):
     @classmethod
     def setUpTestData(
         cls, note=True, auth_client=True, new_note_form_data=True,
-        auth_reader=True, anonymous=True, auth_user=True, form_data=True
+        auth_reader=True, anonymous=True, auth_second_reader=True, 
+        form_data=True
     ):
         if auth_client:
             cls.author = User.objects.create(username='Лев Толстой')
@@ -28,10 +29,10 @@ class ParentTestClass(TestCase):
             cls.reader = User.objects.create(username='Читатель простой')
             cls.auth_reader = Client()
             cls.auth_reader.force_login(cls.reader)
-        if auth_user:
-            cls.user = User.objects.create(username='Мимо Крокодил')
-            cls.auth_user = Client()
-            cls.auth_user.force_login(cls.user)
+        if auth_second_reader:
+            cls.second_reader = User.objects.create(username='Мимо Крокодил')
+            cls.auth_second_reader = Client()
+            cls.auth_second_reader.force_login(cls.second_reader)
         if note:
             cls.note = Note.objects.create(
                 title='Заголовок', text='Текст заметки',
@@ -58,7 +59,8 @@ class TestContent(ParentTestClass):
     @classmethod
     def setUpTestData(
         cls, note=True, auth_client=True, new_note_form_data=False,
-        auth_reader=True, anonymous=False, auth_user=False, form_data=False
+        auth_reader=True, anonymous=False, auth_second_reader=False,
+        form_data=False
     ):
         super().setUpTestData()
 
@@ -87,7 +89,6 @@ class TestContent(ParentTestClass):
         for url in urls:
             with self.subTest(url=url):
                 response = self.auth_client.get(url)
-                self.assertIn(response.context.get('form'), response.context)
-                self.assertIsInstance(
-                    self.auth_client.get(url).context.get('form'), NoteForm
-                )
+                form = response.context.get('form')
+                self.assertIsNotNone(form)
+                self.assertIsInstance(form, NoteForm)
