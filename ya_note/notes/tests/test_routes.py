@@ -128,10 +128,6 @@ class TestRedirects(ParentTestClass):
         super().setUpTestData()
 
     def test_redirect_for_anonymous_client(self):
-        Note.objects.create(
-            title='Заголовок', text='Текст заметки',
-            slug='note-slug', author=self.author,
-        )
         for url in (
             DETAIL_URL, EDIT_URL, DELETE_URL,
         ):
