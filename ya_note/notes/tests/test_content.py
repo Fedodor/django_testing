@@ -83,8 +83,8 @@ class TestContent(ParentTestClass):
 
     def test_pages_contains_form(self):
         urls = (
-            URL_ADD_NOTE,
-            EDIT_URL
+            ('notes:add', None),
+            ('notes:edit', (self.note.slug,)),
         )
         for url in urls:
             with self.subTest(url=url):
