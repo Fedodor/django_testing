@@ -121,14 +121,17 @@ class TestRedirects(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls, note=True, auth_client=False, new_note_form_data=False,
+        cls, note=True, auth_client=True, new_note_form_data=False,
         auth_reader=False, anonymous=True, auth_second_reader=False,
         form_data=False
     ):
         super().setUpTestData()
 
     def test_redirect_for_anonymous_client(self):
-        self.auth_client.post(URL_ADD_NOTE, data=self.form_data)
+        Note.objects.create(
+            title='Заголовок', text='Текст заметки',
+            slug='note-slug', author=self.author,
+        )
         for url in (
             DETAIL_URL, EDIT_URL, DELETE_URL,
         ):
