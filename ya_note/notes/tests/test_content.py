@@ -18,7 +18,7 @@ class ParentTestClass(TestCase):
     @classmethod
     def setUpTestData(
         cls, note=True, auth_client=True, new_note_form_data=True,
-        auth_reader=True, anonymous=True, auth_second_reader=True, 
+        auth_reader=True, anonymous=True, auth_second_reader=True,
         form_data=True
     ):
         if auth_client:
