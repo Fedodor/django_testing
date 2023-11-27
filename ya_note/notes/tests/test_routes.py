@@ -84,9 +84,9 @@ class TestPagesAvaibility(ParentTestClass):
                 (self.client, HTTPStatus.OK),
                 (self.auth_user, HTTPStatus.OK)
             ),
-            URL_NOTES_LIST: ((self.auth_user, HTTPStatus.OK),),
-            URL_ADD_NOTE: ((self.auth_user, HTTPStatus.OK),),
-            URL_SUCCESS: ((self.auth_user, HTTPStatus.OK),),
+            URL_NOTES_LIST: ((self.auth_client, HTTPStatus.OK),),
+            URL_ADD_NOTE: ((self.auth_client, HTTPStatus.OK),),
+            URL_SUCCESS: ((self.auth_client, HTTPStatus.OK),),
             EDIT_URL: (
                 (self.auth_user, HTTPStatus.NOT_FOUND),
                 (self.auth_client, HTTPStatus.OK)
