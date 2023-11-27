@@ -90,15 +90,15 @@ class TestPagesAvaibility(ParentTestClass):
             URL_ADD_NOTE: ((self.auth_client, HTTPStatus.OK),),
             URL_SUCCESS: ((self.auth_client, HTTPStatus.OK),),
             EDIT_URL: (
-                (self.auth_second_reader, HTTPStatus.NOT_FOUND),
+                (self.client, HTTPStatus.NOT_FOUND),
                 (self.auth_client, HTTPStatus.OK)
             ),
             DELETE_URL: (
-                (self.auth_second_reader, HTTPStatus.NOT_FOUND),
+                (self.client, HTTPStatus.NOT_FOUND),
                 (self.auth_client, HTTPStatus.OK)
             ),
             DETAIL_URL: (
-                (self.auth_second_reader, HTTPStatus.NOT_FOUND),
+                (self.client, HTTPStatus.NOT_FOUND),
                 (self.auth_client, HTTPStatus.OK)
             ),
             URL_USER_LOGOUT: (

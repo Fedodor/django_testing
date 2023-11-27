@@ -145,7 +145,7 @@ class TestNoteCreationEdit(ParentTestClass):
         self.assertEqual(self.note.author, self.auth_client)
 
     def test_other_user_cant_edit_note(self):
-        response = self.auth_user.post(EDIT_URL, self.form_data)
+        response = self.auth_second_reader.post(EDIT_URL, self.form_data)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         note_from_db = Note.objects.get(pk=self.note.pk)
         self.assertEqual(self.note.title, note_from_db.title)
