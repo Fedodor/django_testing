@@ -44,7 +44,7 @@ class ParentTestClass(TestCase):
         if note:
             cls.note = Note.objects.create(
                 title='Заголовок', text='Текст заметки',
-                slug='note-slug', author=cls.auth_client,
+                slug='note-slug', author=cls.author,
             )
         if new_note_form_data:
             cls.new_note_form_data = {
