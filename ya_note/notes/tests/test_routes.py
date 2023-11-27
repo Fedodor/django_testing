@@ -89,6 +89,18 @@ class TestPagesAvaibility(ParentTestClass):
             URL_NOTES_LIST: ((self.auth_client, HTTPStatus.OK),),
             URL_ADD_NOTE: ((self.auth_client, HTTPStatus.OK),),
             URL_SUCCESS: ((self.auth_client, HTTPStatus.OK),),
+            EDIT_URL: (
+                (self.client, HTTPStatus.NOT_FOUND),
+                (self.auth_client, HTTPStatus.NOT_FOUND)
+            ),
+            DELETE_URL: (
+                (self.client, HTTPStatus.NOT_FOUND),
+                (self.auth_client, HTTPStatus.NOT_FOUND)
+            ),
+            DETAIL_URL: (
+                (self.client, HTTPStatus.NOT_FOUND),
+                (self.auth_client, HTTPStatus.NOT_FOUND)
+            ),
             URL_USER_LOGOUT: (
                 (self.client, HTTPStatus.OK),
                 (self.auth_second_reader, HTTPStatus.OK)
@@ -121,4 +133,4 @@ class TestRedirects(ParentTestClass):
         ):
             with self.subTest(url=url):
                 redirect_url = f'{URL_USER_LOGIN}?next={url}'
-                self.assertRedirects(self.anonymous.get(url), redirect_url)
+                self.assertRedirects(self.client.get(url), redirect_url)
