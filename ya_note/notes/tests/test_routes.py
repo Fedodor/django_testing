@@ -133,4 +133,4 @@ class TestRedirects(ParentTestClass):
         ):
             with self.subTest(url=url):
                 redirect_url = f'{URL_USER_LOGIN}?next={url}'
-                self.assertRedirects(self.auth_reader.get(url), redirect_url)
+                self.assertRedirects(self.client.get(url), redirect_url)
