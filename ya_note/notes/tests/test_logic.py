@@ -155,8 +155,10 @@ class TestNoteCreationEdit(ParentTestClass):
 
     def test_author_can_delete_note(self):
         notes_count_in_db_before_delete = Note.objects.count()
-        response = self.auth_client.delete(DELETE_URL)
-        self.assertRedirects(response, URL_SUCCESS)
+        response = self.auth_client.delete(
+            reverse('notes:delete', args=(self.note.slug),)
+        )
+        self.assertRedirects(response, reverse('notes:success'))
         notes_count_in_db_after_delete = Note.objects.count()
         self.assertEqual(
             notes_count_in_db_before_delete,
