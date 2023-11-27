@@ -66,7 +66,7 @@ class TestPagesAvaibility(ParentTestClass):
     @classmethod
     def setUpTestData(
         cls, note=True, auth_client=True, new_note_form_data=False,
-            auth_reader=True, anonymous=True, auth_user=False, form_data=False
+            auth_reader=True, anonymous=True, auth_user=True, form_data=False
     ):
         super().setUpTestData()
 
@@ -74,34 +74,34 @@ class TestPagesAvaibility(ParentTestClass):
         data = {
             URL_HOME_PAGE: (
                 (self.client, HTTPStatus.OK),
-                (self.auth_client, HTTPStatus.OK)
+                (self.auth_user, HTTPStatus.OK)
             ),
             URL_USER_LOGIN: (
                 (self.client, HTTPStatus.OK),
-                (self.auth_client, HTTPStatus.OK)
+                (self.auth_user, HTTPStatus.OK)
             ),
             URL_USER_SIGNUP: (
                 (self.client, HTTPStatus.OK),
-                (self.auth_client, HTTPStatus.OK)
+                (self.auth_user, HTTPStatus.OK)
             ),
-            URL_NOTES_LIST: ((self.auth_reader, HTTPStatus.OK),),
-            URL_ADD_NOTE: ((self.auth_reader, HTTPStatus.OK),),
-            URL_SUCCESS: ((self.auth_reader, HTTPStatus.OK),),
+            URL_NOTES_LIST: ((self.auth_user, HTTPStatus.OK),),
+            URL_ADD_NOTE: ((self.auth_user, HTTPStatus.OK),),
+            URL_SUCCESS: ((self.auth_user, HTTPStatus.OK),),
             EDIT_URL: (
-                (self.auth_reader, HTTPStatus.NOT_FOUND),
+                (self.auth_user, HTTPStatus.NOT_FOUND),
                 (self.auth_client, HTTPStatus.OK)
             ),
             DELETE_URL: (
-                (self.auth_reader, HTTPStatus.NOT_FOUND),
+                (self.auth_user, HTTPStatus.NOT_FOUND),
                 (self.auth_client, HTTPStatus.OK)
             ),
             DETAIL_URL: (
-                (self.auth_reader, HTTPStatus.NOT_FOUND),
+                (self.auth_user, HTTPStatus.NOT_FOUND),
                 (self.auth_client, HTTPStatus.OK)
             ),
             URL_USER_LOGOUT: (
                 (self.client, HTTPStatus.OK),
-                (self.auth_client, HTTPStatus.OK)
+                (self.auth_user, HTTPStatus.OK)
             ),
         }
         for item in data.items():
