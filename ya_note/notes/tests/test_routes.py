@@ -128,6 +128,7 @@ class TestRedirects(ParentTestClass):
         super().setUpTestData()
 
     def test_redirect_for_anonymous_client(self):
+        self.auth_client.post(URL_ADD_NOTE, note=True)
         for url in (
             DETAIL_URL, EDIT_URL, DELETE_URL,
         ):
