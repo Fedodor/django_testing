@@ -122,7 +122,7 @@ class TestRedirects(ParentTestClass):
     @classmethod
     def setUpTestData(
         cls, note=True, auth_client=True, new_note_form_data=False,
-        auth_reader=False, anonymous=True, auth_second_reader=False,
+        auth_reader=True, anonymous=True, auth_second_reader=False,
         form_data=False
     ):
         super().setUpTestData()
@@ -133,4 +133,4 @@ class TestRedirects(ParentTestClass):
         ):
             with self.subTest(url=url):
                 redirect_url = f'{URL_USER_LOGIN}?next={url}'
-                self.assertRedirects(self.client.get(url), redirect_url)
+                self.assertRedirects(self.auth_reader.get(url), redirect_url)
