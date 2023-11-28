@@ -15,9 +15,9 @@ URL_ADD_NOTE = reverse('notes:add')
 URL_SUCCESS = reverse('notes:success')
 
 NOTE_SLUG = 'note-slug'
-EDIT_URL = reverse('notes:edit', args=(NOTE_SLUG,)),
-DELETE_URL = reverse('notes:delete', args=(NOTE_SLUG,)),
-DETAIL_URL = reverse('notes:detail', args=(NOTE_SLUG,)),
+EDIT_URL = reverse('notes:edit', args=(NOTE_SLUG,))
+DELETE_URL = reverse('notes:delete', args=(NOTE_SLUG,))
+DETAIL_URL = reverse('notes:detail', args=(NOTE_SLUG,))
 
 User = get_user_model()
 
@@ -25,9 +25,9 @@ User = get_user_model()
 class ParentTestClass(TestCase):
     @classmethod
     def setUpTestData(
-        cls, note=True, auth_client=True, new_note_form_data=True,
-        auth_reader=True, anonymous=True, auth_second_reader=True,
-        form_data=True
+        cls, note=False, auth_client=True, new_note_form_data=False,
+        auth_reader=False, anonymous=False, auth_second_reader=False,
+        form_data=False
     ):
         if auth_client:
             cls.author = User.objects.create(username='Лев Толстой')
@@ -65,44 +65,44 @@ class ParentTestClass(TestCase):
 class TestPagesAvaibility(ParentTestClass):
 
     @classmethod
-    def setUpTestData(
-        cls, note=True, auth_client=True, new_note_form_data=False,
+    def setUpTestData(cls):
+        super().setUpTestData(
+            note=True, auth_client=True, new_note_form_data=False,
             auth_reader=True, anonymous=True, auth_second_reader=True,
             form_data=False
-    ):
-        super().setUpTestData()
+        )
 
     def test_pages_availability_for_all_users(self):
         data = {
             URL_HOME_PAGE: (
-                (self.client, HTTPStatus.OK),
+                (self.anonymous, HTTPStatus.OK),
                 (self.auth_second_reader, HTTPStatus.OK)
             ),
             URL_USER_LOGIN: (
-                (self.client, HTTPStatus.OK),
+                (self.anonymous, HTTPStatus.OK),
                 (self.auth_second_reader, HTTPStatus.OK)
             ),
             URL_USER_SIGNUP: (
-                (self.client, HTTPStatus.OK),
+                (self.anonymous, HTTPStatus.OK),
                 (self.auth_second_reader, HTTPStatus.OK)
             ),
             URL_NOTES_LIST: ((self.auth_client, HTTPStatus.OK),),
             URL_ADD_NOTE: ((self.auth_client, HTTPStatus.OK),),
             URL_SUCCESS: ((self.auth_client, HTTPStatus.OK),),
             EDIT_URL: (
-                (self.client, HTTPStatus.NOT_FOUND),
-                (self.auth_client, HTTPStatus.NOT_FOUND)
+                (self.auth_second_reader, HTTPStatus.NOT_FOUND),
+                (self.auth_client, HTTPStatus.OK)
             ),
             DELETE_URL: (
-                (self.client, HTTPStatus.NOT_FOUND),
-                (self.auth_client, HTTPStatus.NOT_FOUND)
+                (self.auth_second_reader, HTTPStatus.NOT_FOUND),
+                (self.auth_client, HTTPStatus.OK)
             ),
             DETAIL_URL: (
-                (self.client, HTTPStatus.NOT_FOUND),
-                (self.auth_client, HTTPStatus.NOT_FOUND)
+                (self.auth_second_reader, HTTPStatus.NOT_FOUND),
+                (self.auth_client, HTTPStatus.OK)
             ),
             URL_USER_LOGOUT: (
-                (self.client, HTTPStatus.OK),
+                (self.anonymous, HTTPStatus.OK),
                 (self.auth_second_reader, HTTPStatus.OK)
             ),
         }
@@ -121,15 +121,19 @@ class TestRedirects(ParentTestClass):
 
     @classmethod
     def setUpTestData(
-        cls, note=True, auth_client=True, new_note_form_data=False,
-        auth_reader=True, anonymous=True, auth_second_reader=False,
-        form_data=False
+        cls
     ):
-        super().setUpTestData()
+        super().setUpTestData(
+            note=True, auth_client=True, new_note_form_data=False,
+            auth_reader=True, anonymous=True, auth_second_reader=False,
+            form_data=False
+        )
 
     def test_redirect_for_anonymous_client(self):
-        for name in ('notes:detail', 'notes:edit', 'notes:delete'):
-            with self.subTest(name=name):
-                url = reverse(name, args=(self.note.slug,))
+        urls = (
+            DETAIL_URL, DELETE_URL, EDIT_URL
+        )
+        for url in urls:
+            with self.subTest(url=url):
                 redirect_url = f'{URL_USER_LOGIN}?next={url}'
                 self.assertRedirects(self.client.get(url), redirect_url)

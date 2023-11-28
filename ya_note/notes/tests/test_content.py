@@ -9,7 +9,7 @@ URL_NOTES_LIST = reverse('notes:list')
 URL_ADD_NOTE = reverse('notes:add')
 
 NOTE_SLUG = 'note-slug'
-EDIT_URL = reverse('notes:edit', args=(NOTE_SLUG,)),
+EDIT_URL = reverse('notes:edit', args=(NOTE_SLUG,))
 
 User = get_user_model()
 
@@ -17,9 +17,9 @@ User = get_user_model()
 class ParentTestClass(TestCase):
     @classmethod
     def setUpTestData(
-        cls, note=True, auth_client=True, new_note_form_data=True,
-        auth_reader=True, anonymous=True, auth_second_reader=True,
-        form_data=True
+        cls, note=False, auth_client=True, new_note_form_data=False,
+        auth_reader=False, anonymous=False, auth_second_reader=False,
+        form_data=False
     ):
         if auth_client:
             cls.author = User.objects.create(username='Лев Толстой')
@@ -57,38 +57,39 @@ class ParentTestClass(TestCase):
 class TestContent(ParentTestClass):
 
     @classmethod
-    def setUpTestData(
-        cls, note=True, auth_client=True, new_note_form_data=False,
-        auth_reader=True, anonymous=False, auth_second_reader=False,
-        form_data=False
-    ):
-        super().setUpTestData()
+    def setUpTestData(cls):
+        super().setUpTestData(
+            note=True, auth_client=True, new_note_form_data=False,
+            auth_reader=True, anonymous=False, auth_second_reader=False,
+            form_data=False
+        )
 
     def test_notes_list_for_different_users(self):
-        users_bools = (
-            (self.auth_client, True),
-            (self.auth_reader, False)
+        notes = self.auth_client.get(
+            URL_NOTES_LIST
+        ).context['object_list']
+        self.assertIn(self.note, notes)
+        self.assertEqual(len(notes), 1)
+        note = notes[0]
+        self.assertEqual(note.title, self.note.title)
+        self.assertEqual(note.text, self.note.text)
+        self.assertEqual(note.slug, self.note.slug)
+        self.assertEqual(note.author, self.note.author)
+
+    def test_list_of_notes_for_other_author(self):
+        self.assertNotIn(
+            self.note, self.auth_reader.get(
+                URL_NOTES_LIST
+            ).context['object_list']
         )
-        for users, bools in users_bools:
-            with self.subTest(users=users, bools=bools):
-                notes = users.get(URL_NOTES_LIST).context['object_list']
-                if users is self.auth_client:
-                    self.assertIn(self.note, notes)
-                    self.assertEqual(len(notes), 1)
-                note = notes.get(pk=self.note.pk)
-                self.assertEqual((note in notes), bools)
-                self.assertEqual((note.title in self.note.title), bools)
-                self.assertEqual((note.text in self.note.text), bools)
-                self.assertEqual((note.slug in self.note.slug), bools)
 
     def test_pages_contains_form(self):
         urls = (
-            ('notes:add', None),
-            ('notes:edit', (self.note.slug,)),
+            URL_ADD_NOTE,
+            EDIT_URL
         )
-        for name, args in urls:
-            with self.subTest(name=name):
-                url = reverse(name, args=args)
+        for url in urls:
+            with self.subTest(url=url):
                 response = self.auth_client.get(url)
                 self.assertIn('form', response.context)
-                self.assertIsInstance(response.context.get('form'), NoteForm)
+                self.assertIsInstance(response.context['form'], NoteForm)
