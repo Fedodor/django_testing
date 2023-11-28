@@ -13,7 +13,7 @@ URL_NOTES_LIST = reverse('notes:list')
 URL_ADD_NOTE = reverse('notes:add')
 URL_SUCCESS = reverse('notes:success')
 
-NOTE_SLUG = 'bulka'
+NOTE_SLUG = 'note-slug'
 EDIT_URL = reverse('notes:edit', args=(NOTE_SLUG,)),
 DELETE_URL = reverse('notes:delete', args=(NOTE_SLUG,)),
 
@@ -136,7 +136,7 @@ class TestNoteCreationEdit(ParentTestClass):
         self.assertEqual(slugify(last_note.title), expected_slug)
 
     def test_author_can_edit_note(self):
-        response = self.auth_client.post(EDIT_URL, self.form_data)
+        response = self.auth_client.post(EDIT_URL, data=self.form_data)
         self.assertRedirects(response, URL_SUCCESS)
         self.note.refresh_from_db()
         self.assertEqual(self.note.title, self.form_data['title'])
@@ -154,9 +154,12 @@ class TestNoteCreationEdit(ParentTestClass):
         self.assertEqual(self.note.author, note_from_db.author)
 
     def test_author_can_delete_note(self):
+        self.auth_client.post(
+            URL_ADD_NOTE, data=self.form_data
+        )
         notes_count_in_db_before_delete = Note.objects.count()
         response = self.auth_client.delete(
-            reverse('notes:delete', args=(self.note.slug),)
+            DELETE_URL
         )
         self.assertRedirects(response, reverse('notes:success'))
         notes_count_in_db_after_delete = Note.objects.count()

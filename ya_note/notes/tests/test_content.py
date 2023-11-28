@@ -8,7 +8,7 @@ from notes.models import Note
 URL_NOTES_LIST = reverse('notes:list')
 URL_ADD_NOTE = reverse('notes:add')
 
-NOTE_SLUG = 'bulka'
+NOTE_SLUG = 'note-slug'
 EDIT_URL = reverse('notes:edit', args=(NOTE_SLUG,)),
 
 User = get_user_model()
