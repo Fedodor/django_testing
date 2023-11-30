@@ -24,24 +24,6 @@ REDIRECT_URL_FOR_DETAIL_URL = f'{URL_USER_LOGIN}?next={DETAIL_URL}'
 User = get_user_model()
 
 
-class ParentTestClassFail(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.author = User.objects.create(username='Лев Толстой')
-        cls.reader = User.objects.create(username='Читатель простой')
-        cls.note = Note.objects.create(
-            title='Заголовок', text='Текст заметки',
-            slug='note-slug', author=cls.author,
-        )
-        cls.form_data = {
-            'title': 'Новый заголовок',
-            'text': 'Новый текст',
-            'slug': 'note-slug'
-        }
-        cls.auth_client = cls.client.force_login(cls.author)
-        cls.auth_reader = cls.client.force_login(cls.reader)
-
-
 class ParentTestClass(TestCase):
     @classmethod
     def setUpTestData(

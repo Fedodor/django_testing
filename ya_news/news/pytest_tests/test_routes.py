@@ -1,10 +1,7 @@
 import pytest
 from pytest_django.asserts import assertRedirects
-# from pytest_lazyfixture import lazy_fixture
 
 from http import HTTPStatus
-
-# from django.urls import reverse
 
 pytestmark = pytest.mark.django_db
 
@@ -23,32 +20,35 @@ EXPECTED_EDIT_URL = pytest.lazy_fixture('expected_edit_url')
 EXPECTED_DELETE_URL = pytest.lazy_fixture('expected_delete_url')
 
 
+@pytest.mark.parametrize(
+    'url, parametrized_client, expected_status',
+    (
+        (URL_HOME_PAGE, CLIENT, HTTPStatus.OK),
+        (URL_USER_LOGIN, CLIENT, HTTPStatus.OK),
+        (URL_USER_LOGOUT, CLIENT, HTTPStatus.OK),
+        (URL_USER_SIGNUP, CLIENT, HTTPStatus.OK),
+        (URL_EDIT_COMMENT, AUTHOR, HTTPStatus.OK),
+        (URL_DELETE_COMMENT, AUTHOR, HTTPStatus.OK),
+        (URL_EDIT_COMMENT, ADMIN, HTTPStatus.NOT_FOUND),
+        (URL_DELETE_COMMENT, ADMIN, HTTPStatus.NOT_FOUND),
+    )
+)
 def test_pages_availability_for_all_users(
-        url_home_page, url_user_login, url_user_logout,
-        url_user_signup, url_edit_comment, url_delete_comment,
-        client, author_client, admin_client
+        url, parametrized_client, expected_status
 ):
-    cases = (
-        (url_home_page, client, HTTPStatus.OK),
-        (url_user_login, client, HTTPStatus.OK),
-        (url_user_logout, client, HTTPStatus.OK),
-        (url_user_signup, client, HTTPStatus.OK),
-        (url_edit_comment, author_client, HTTPStatus.OK),
-        (url_delete_comment, author_client, HTTPStatus.OK),
-        (url_edit_comment, admin_client, HTTPStatus.NOT_FOUND),
-        (url_delete_comment, admin_client, HTTPStatus.NOT_FOUND),
+    assert parametrized_client.get(url).status_code == expected_status, (
+        f'Проверьте, что код ответа страницы "{url}" соответствует ожидаемому.'
     )
-    for url, some_user, expected_status in cases:
-        assert some_user.get(url).status_code == expected_status
 
 
+@pytest.mark.parametrize(
+    'url, expected_url',
+    (
+        (URL_EDIT_COMMENT, EXPECTED_EDIT_URL),
+        (URL_DELETE_COMMENT, EXPECTED_DELETE_URL),
+    )
+)
 def test_redirect_for_anonymous_client(
-    client, url_delete_comment, url_edit_comment,
-    expected_edit_url, expected_delete_url
+    client, url, expected_url
 ):
-    urls = (
-        (url_edit_comment, expected_edit_url),
-        (url_delete_comment, expected_delete_url),
-    )
-    for url, expected_url in urls:
-        assertRedirects(client.get(url), expected_url)
+    assertRedirects(client.get(url), expected_url)

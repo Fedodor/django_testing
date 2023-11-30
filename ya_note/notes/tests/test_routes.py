@@ -27,12 +27,12 @@ class TestPagesAvaibility(ParentTestClass):
             [URL_USER_LOGOUT, self.anonymous, HTTPStatus.OK],
             [URL_USER_SIGNUP, self.anonymous, HTTPStatus.OK]
         ]
-        for url, some_user, expected_status in cases:
+        for url, client, expected_status in cases:
             with self.subTest(
-                some_user=some_user, url=url, expected_status=expected_status
+                client=client, url=url, expected_status=expected_status
             ):
                 self.assertEqual(
-                    some_user.get(url).status_code, expected_status
+                    client.get(url).status_code, expected_status
                 )
 
     def test_redirect_for_anonymous_client(self):

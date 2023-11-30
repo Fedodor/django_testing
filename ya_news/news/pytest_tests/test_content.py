@@ -31,7 +31,7 @@ def test_order_comments_on_detail_page(
         comment.created for comment in author_client.get(
             url_detail_page).context['news'].comment_set.all()
     ]
-    assert created_dates == sorted(created_dates, reverse=False)
+    assert created_dates == sorted(created_dates)
 
 
 def test_detail_page_for_author_has_form(author_client, url_detail_page):

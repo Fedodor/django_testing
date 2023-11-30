@@ -51,7 +51,8 @@ def test_user_cant_use_bad_words_in_comments(
 
 def test_author_can_delete_comment(author_client, url_delete_comment):
     assert author_client.delete(
-        url_delete_comment).status_code == HTTPStatus.FOUND
+        url_delete_comment
+    ).status_code == HTTPStatus.FOUND
     assert Comment.objects.count() == 0
 
 
@@ -62,7 +63,7 @@ def test_author_can_edit_comment(
         url_edit_comment, data=FORM_DATA_UPDATED_COMMENT
     ).status_code == HTTPStatus.FOUND
     comment.refresh_from_db()
-    assert comment.text == FORM_DATA_UPDATED_COMMENT.get('text')
+    assert comment.text == FORM_DATA_UPDATED_COMMENT['text']
     assert comment.news == news
     assert comment.author == author
 
@@ -70,11 +71,15 @@ def test_author_can_edit_comment(
 def test_user_cant_edit_comment_of_another_user(
     admin_client, comment, url_edit_comment
 ):
-    comment_before_edit = Comment.objects.get()
+    comment_before_edit = Comment.objects.get(
+        text='Текст комментария'
+    )
     assert admin_client.post(
         url_edit_comment, data=FORM_DATA_UPDATED_COMMENT
     ).status_code == HTTPStatus.NOT_FOUND
-    comment.refresh_from_db()
+    comment = Comment.objects.get(
+        text='Текст комментария'
+    )
     assert comment.text == comment_before_edit.text
     assert comment.author == comment_before_edit.author
     assert comment.news == comment_before_edit.news
