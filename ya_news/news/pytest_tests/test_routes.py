@@ -36,9 +36,7 @@ EXPECTED_DELETE_URL = pytest.lazy_fixture('expected_delete_url')
 def test_pages_availability_for_all_users(
         url, parametrized_client, expected_status
 ):
-    assert parametrized_client.get(url).status_code == expected_status, (
-        f'Проверьте, что код ответа страницы "{url}" соответствует ожидаемому.'
-    )
+    assert parametrized_client.get(url).status_code == expected_status
 
 
 @pytest.mark.parametrize(

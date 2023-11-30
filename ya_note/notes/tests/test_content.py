@@ -18,7 +18,7 @@ class TestContent(ParentTestClass):
         self.assertEqual(note.slug, self.note.slug)
         self.assertEqual(note.author, self.note.author)
 
-    def test_list_of_notes_visibility_for_user(self):
+    def test_list_of_notes_visibility_for_other_users(self):
         self.assertNotIn(
             self.note, self.auth_reader.get(
                 URL_NOTES_LIST

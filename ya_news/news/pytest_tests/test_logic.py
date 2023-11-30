@@ -62,24 +62,19 @@ def test_author_can_edit_comment(
     assert author_client.post(
         url_edit_comment, data=FORM_DATA_UPDATED_COMMENT
     ).status_code == HTTPStatus.FOUND
-    comment.refresh_from_db()
-    assert comment.text == FORM_DATA_UPDATED_COMMENT['text']
-    assert comment.news == news
-    assert comment.author == author
+    comment_after_edit = Comment.objects.get()
+    assert comment_after_edit.text == FORM_DATA_UPDATED_COMMENT['text']
+    assert comment_after_edit.news == comment.news
+    assert comment_after_edit.author == comment.author
 
 
 def test_user_cant_edit_comment_of_another_user(
     admin_client, comment, url_edit_comment
 ):
-    comment_before_edit = Comment.objects.get(
-        text='Текст комментария'
-    )
     assert admin_client.post(
         url_edit_comment, data=FORM_DATA_UPDATED_COMMENT
     ).status_code == HTTPStatus.NOT_FOUND
-    comment = Comment.objects.get(
-        text='Текст комментария'
-    )
-    assert comment.text == comment_before_edit.text
-    assert comment.author == comment_before_edit.author
-    assert comment.news == comment_before_edit.news
+    comment_after_edit = Comment.objects.get()
+    assert comment_after_edit.text == comment.text
+    assert comment_after_edit.author == comment.author
+    assert comment_after_edit.news == comment.news
