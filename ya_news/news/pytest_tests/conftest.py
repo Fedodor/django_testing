@@ -6,8 +6,9 @@ from django.test import Client
 from django.utils import timezone
 from django.urls import reverse
 
-from news.forms import BAD_WORDS
 from news.models import Comment, News
+
+LOGIN_URL = reverse('users:login')
 
 
 @pytest.fixture
@@ -43,14 +44,6 @@ def news_list():
 
 
 @pytest.fixture
-def form_data_news():
-    return {
-        'title': 'Заголовок',
-        'text': 'Текст новости',
-    }
-
-
-@pytest.fixture
 def comment(author, news):
     return Comment.objects.create(
         text='Текст комментария',
@@ -61,36 +54,12 @@ def comment(author, news):
 
 @pytest.fixture
 def comments_list(author, news):
-    for index in range(4):
+    for index in range(444):
         comment = Comment.objects.create(
             news=news, author=author, text=f'Текст {index}'
         )
         comment.created = timezone.now() + timedelta(days=index)
         comment.save()
-    return comment
-
-
-@pytest.fixture
-def form_data_comment():
-    return {
-        'text': 'Текст комментария',
-    }
-
-
-@pytest.fixture
-def form_data_updated_comment(author, news):
-    return {
-        'text': 'Updated comment',
-        author: author,
-        news: news,
-    }
-
-
-@pytest.fixture
-def form_data_bad_comment():
-    return {
-        'text': f'Text, {BAD_WORDS[0]}, text'
-    }
 
 
 @pytest.fixture
@@ -126,3 +95,17 @@ def url_delete_comment(comment):
 @pytest.fixture
 def url_edit_comment(comment):
     return reverse('news:edit', args=(comment.pk,))
+
+
+@pytest.fixture
+def expected_edit_url(
+    url_edit_comment
+):
+    return f'{LOGIN_URL}?next={url_edit_comment}'
+
+
+@pytest.fixture
+def expected_delete_url(
+    url_delete_comment
+):
+    return f'{LOGIN_URL}?next={url_delete_comment}'
