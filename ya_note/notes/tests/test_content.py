@@ -11,14 +11,14 @@ class TestContent(ParentTestClass):
             URL_NOTES_LIST
         ).context['object_list']
         self.assertIn(self.note, notes)
-        self.assertEqual(len(notes), 1)
+        self.assertEqual(len(notes), 2)
         note = notes[0]
         self.assertEqual(note.title, self.note.title)
         self.assertEqual(note.text, self.note.text)
         self.assertEqual(note.slug, self.note.slug)
         self.assertEqual(note.author, self.note.author)
 
-    def test_list_of_notes_visibility_for_other_users(self):
+    def test_list_of_notes_visibility_for_other_author(self):
         self.assertNotIn(
             self.note, self.auth_reader.get(
                 URL_NOTES_LIST

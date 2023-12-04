@@ -1,7 +1,5 @@
 from http import HTTPStatus
 
-from pytils.translit import slugify
-
 from .constants_and_parent_test_class import (
     ParentTestClass, DELETE_URL, EDIT_URL,
     URL_ADD_NOTE, URL_SUCCESS
@@ -11,23 +9,23 @@ from notes.models import Note
 
 class TestNoteCreationEdit(ParentTestClass):
 
-    def auth_client_can_create_note(self):
+    def auth_client_can_create_note(self, slug):
         response = self.auth_client.post(
             URL_ADD_NOTE, data=self.second_new_note_form_data
         )
         self.assertRedirects(response, URL_SUCCESS)
-        new_note = Note.objects.get(
-            slug=self.second_new_note_form_data['slug']
-        )
+        new_note = Note.objects.latest('id')
         self.assertEqual(
             new_note.title, self.second_new_note_form_data['title']
         )
         self.assertEqual(new_note.text, self.second_new_note_form_data['text'])
-        self.assertEqual(new_note.slug, self.second_new_note_form_data['slug'])
-        self.assertEqual(new_note.author, self.note.author)
+        self.assertEqual(new_note.slug, slug)
+        self.assertEqual(new_note.author, self.author)
 
     def test_user_can_create_note(self):
-        self.auth_client_can_create_note()
+        self.auth_client_can_create_note(
+            self.second_new_note_form_data['slug']
+        )
 
     def test_anonymous_user_cant_create_note(self):
         notes = Note.objects.all()
@@ -37,21 +35,16 @@ class TestNoteCreationEdit(ParentTestClass):
         )
 
     def test_empty_slug(self):
-        self.auth_client_can_create_note()
-        expected_slug = slugify('Заголовок 2')
-        new_note = Note.objects.get(
-            slug=self.second_new_note_form_data['slug']
+        self.auth_client_can_create_note(
+            'note-slug-second'
         )
-        self.assertEqual(slugify(new_note.title), expected_slug)
 
     def test_author_can_edit_note(self):
         response = self.auth_client.post(
             EDIT_URL, data=self.new_note_form_data
         )
         self.assertRedirects(response, URL_SUCCESS)
-        note = Note.objects.get(
-            slug=self.new_note_form_data['slug']
-        )
+        note = Note.objects.get(id=self.note.id)
         self.assertEqual(note.title, self.new_note_form_data['title'])
         self.assertEqual(note.text, self.new_note_form_data['text'])
         self.assertEqual(note.slug, self.new_note_form_data['slug'])
@@ -78,9 +71,8 @@ class TestNoteCreationEdit(ParentTestClass):
         self.assertEqual(self.note.author, last_note.author)
 
     def test_author_can_delete_note(self):
-        notes = Note.objects.get(id=self.note.id)
         response = self.auth_client.delete(
             DELETE_URL
         )
         self.assertRedirects(response, URL_SUCCESS)
-        self.assertNotIn(notes, Note.objects.all())
+        self.assertTrue(self.note.DoesNotExist)

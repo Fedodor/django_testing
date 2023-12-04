@@ -28,9 +28,9 @@ class ParentTestClass(TestCase):
     @classmethod
     def setUpTestData(
         cls, note=True, auth_client=True, new_note_form_data=True,
-        auth_reader=True, anonymous=True, auth_second_reader=True,
+        auth_reader=True, anonymous=True,
         form_data=True, second_new_note_form_data=True,
-        third_note_form_data=True
+        third_note_form_data=True, note_for_slug=True
     ):
         if auth_client:
             cls.author = User.objects.create(username='Лев Толстой')
@@ -40,14 +40,15 @@ class ParentTestClass(TestCase):
             cls.reader = User.objects.create(username='Читатель простой')
             cls.auth_reader = Client()
             cls.auth_reader.force_login(cls.reader)
-        if auth_second_reader:
-            cls.second_reader = User.objects.create(username='Мимо Крокодил')
-            cls.auth_second_reader = Client()
-            cls.auth_second_reader.force_login(cls.second_reader)
         if note:
             cls.note = Note.objects.create(
                 title='Заголовок', text='Текст заметки',
                 slug='note-slug', author=cls.author,
+            )
+        if note_for_slug:
+            cls.note_for_slug = Note.objects.create(
+                title='Заголовок 4', text='Some text',
+                author=cls.author
             )
         if new_note_form_data:
             cls.new_note_form_data = {
