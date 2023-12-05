@@ -1,8 +1,10 @@
 from http import HTTPStatus
 
+from pytils.translit import slugify
+
 from .constants_and_parent_test_class import (
     ParentTestClass, DELETE_URL, EDIT_URL,
-    URL_ADD_NOTE, URL_SUCCESS
+    URL_ADD_NOTE, URL_SUCCESS, URL_NOTES_LIST
 )
 from notes.models import Note
 
@@ -14,7 +16,10 @@ class TestNoteCreationEdit(ParentTestClass):
             URL_ADD_NOTE, data=self.second_new_note_form_data
         )
         self.assertRedirects(response, URL_SUCCESS)
-        new_note = Note.objects.latest('id')
+        notes = self.auth_client.get(
+            URL_NOTES_LIST
+        ).context['object_list']
+        new_note = notes[len(notes) - 1]
         self.assertEqual(
             new_note.title, self.second_new_note_form_data['title']
         )
@@ -35,8 +40,9 @@ class TestNoteCreationEdit(ParentTestClass):
         )
 
     def test_empty_slug(self):
+        self.second_new_note_form_data.pop('slug')
         self.auth_client_can_create_note(
-            'note-slug-second'
+            slugify(self.second_new_note_form_data['title'])
         )
 
     def test_author_can_edit_note(self):
@@ -75,4 +81,6 @@ class TestNoteCreationEdit(ParentTestClass):
             DELETE_URL
         )
         self.assertRedirects(response, URL_SUCCESS)
-        self.assertTrue(self.note.DoesNotExist)
+        self.assertFalse(Note.objects.filter(
+            id=self.note.id).exists()
+        )

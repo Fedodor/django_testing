@@ -6,19 +6,19 @@ from .constants_and_parent_test_class import (
 
 class TestContent(ParentTestClass):
 
-    def test_list_of_notes_visibility_for_author(self):
+    def test_visibility_note_on_list_page(self):
         notes = self.auth_client.get(
             URL_NOTES_LIST
         ).context['object_list']
         self.assertIn(self.note, notes)
-        self.assertEqual(len(notes), 2)
+        self.assertEqual(len(notes), 1)
         note = notes[0]
         self.assertEqual(note.title, self.note.title)
         self.assertEqual(note.text, self.note.text)
         self.assertEqual(note.slug, self.note.slug)
         self.assertEqual(note.author, self.note.author)
 
-    def test_list_of_notes_visibility_for_other_author(self):
+    def test_visibility_notes_other_author(self):
         self.assertNotIn(
             self.note, self.auth_reader.get(
                 URL_NOTES_LIST
