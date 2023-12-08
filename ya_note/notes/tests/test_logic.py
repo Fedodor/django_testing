@@ -4,7 +4,7 @@ from pytils.translit import slugify
 
 from .constants_and_parent_test_class import (
     ParentTestClass, DELETE_URL, EDIT_URL,
-    URL_ADD_NOTE, URL_SUCCESS, URL_NOTES_LIST
+    URL_ADD_NOTE, URL_SUCCESS
 )
 from notes.models import Note
 
@@ -12,14 +12,16 @@ from notes.models import Note
 class TestNoteCreationEdit(ParentTestClass):
 
     def auth_client_can_create_note(self, slug):
+        notes_befor = set(Note.objects.all())
         response = self.auth_client.post(
             URL_ADD_NOTE, data=self.second_new_note_form_data
         )
         self.assertRedirects(response, URL_SUCCESS)
-        notes = self.auth_client.get(
-            URL_NOTES_LIST
-        ).context['object_list']
-        new_note = notes[len(notes) - 1]
+        created_notes = set(Note.objects.all()).difference(
+            notes_befor
+        )
+        self.assertEqual(len(created_notes), 1)
+        new_note = Note.objects.get(id=created_notes.pop().id)
         self.assertEqual(
             new_note.title, self.second_new_note_form_data['title']
         )
